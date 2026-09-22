@@ -18,6 +18,12 @@ class Router {
         $uri = parse_url($_SERVER['REQUEST_URI'] ?? '/', PHP_URL_PATH);
         $uri = rtrim($uri, '/') ?: '/';
 
+        // First-login password gate: must-change users stay on profile/logout until set.
+        if (Auth::check() && (int)(Auth::user()['must_change_password'] ?? 0) === 1) {
+            $open = $uri === '/profile' || $uri === '/logout' || $uri === '/healthz' || str_starts_with($uri, '/sync/');
+            if (!$open) { header('Location: /profile'); exit; }
+        }
+
         foreach ($this->routes as $r) {
             $pattern = $this->compile($r['path']);
             if ($r['method'] !== $method) continue;

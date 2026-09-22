@@ -3,6 +3,7 @@ namespace App\Controllers;
 
 use App\Core\Auth;
 use App\Core\Database;
+use App\Core\Sync;
 use App\Core\View;
 
 class StudentController {
@@ -98,6 +99,8 @@ class StudentController {
         if(!$s){ flash('error','Borrower not found'); header('Location: /students'); exit; }
         $active = (int)(Database::one("SELECT COUNT(*) as c FROM issues WHERE student_id=? AND status IN ('issued','overdue')", [$id])['c'] ?? 0);
         if($active > 0){ flash('error', $s['name']." has $active book(s) out — return them before removing the borrower"); header("Location: /students/$id"); exit; }
+        Sync::tombstone('students', $id);
+        Sync::tombstone('users', $s['user_id']);
         Database::exec("DELETE FROM students WHERE id=?", [$id]);
         Database::exec("DELETE FROM users WHERE id=?", [$s['user_id']]);
         flash('success',"Borrower {$s['name']} removed with linked loans, fines and login");

@@ -3,6 +3,7 @@ namespace App\Controllers;
 
 use App\Core\Auth;
 use App\Core\Database;
+use App\Core\Sync;
 use App\Core\View;
 
 class BillController {
@@ -32,6 +33,7 @@ class BillController {
     }
     public function delete(string $id): void {
         Auth::requireRole('librarian');
+        Sync::tombstone('purchase_bills', $id);
         Database::exec("DELETE FROM purchase_bills WHERE id=?", [$id]);
         flash('success','Bill deleted'); header('Location: /bills'); exit;
     }

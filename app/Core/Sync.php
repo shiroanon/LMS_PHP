@@ -8,8 +8,12 @@ namespace App\Core;
 class Sync {
     public const SKEW_SECONDS = 300;
 
-    /** Load .env into $_ENV (same rules as Database::pdo, safe to call twice). */
+    /** Load .env into $_ENV (same rules as Database::pdo, safe to call twice). Real environment wins (CLI $_ENV is often empty). */
     public static function loadEnv(): void {
+        foreach (['NODE_ID', 'NODE_ROLE', 'SYNC_PEER_URL', 'APP_KEY'] as $k) {
+            $g = getenv($k);
+            if ($g !== false && $g !== '') $_ENV[$k] = $g;
+        }
         $envFile = dirname(__DIR__, 2) . '/.env';
         if (!file_exists($envFile)) return;
         foreach (file($envFile, FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES) as $line) {
@@ -42,12 +46,26 @@ class Sync {
         return (string)($_ENV['APP_KEY'] ?? '');
     }
 
-    /** Canonical signature over method, path, timestamp, nonce and raw body. */
+    /** Canonical signature over method, path, timestamp, nonce and raw body.
+     *  $path is the URI path WITHOUT query string, identical on both sides. */
     public static function sign(string $method, string $path, string $ts, string $nonce, string $body): string {
         $payload = implode("\n", [strtoupper($method), $path, $ts, $nonce, hash('sha256', $body)]);
         return hash_hmac('sha256', $payload, self::appKey());
     }
 
+    /**
+     * Log a hard delete for replication (call BEFORE the DELETE runs).
+     * Fail-open: sync metadata must never break desk operations.
+     */
+    public static function tombstone(string $table, $rowId): void {
+        try {
+            Database::exec(
+                "INSERT INTO sync_tombstones (tbl, row_id, node_id) VALUES (?,?,?)",
+                [$table, (string)$rowId, self::nodeId()]
+            );
+        } catch (\Throwable $e) { /* old deploy without sync tables: desk still works */
+        }
+    }
     /**
      * Verify sync headers. Returns null on success, error string on failure.
      * Fail-closed: empty APP_KEY, bad signature, stale timestamp or reused nonce all reject.

@@ -3,6 +3,7 @@ namespace App\Controllers;
 
 use App\Core\Auth;
 use App\Core\Database;
+use App\Core\Sync;
 use App\Core\View;
 
 class RuleController {
@@ -20,6 +21,7 @@ class RuleController {
     }
     public function delete(string $id): void {
         Auth::requireRole('librarian');
+        Sync::tombstone('library_rules', $id);
         Database::exec("DELETE FROM library_rules WHERE id=?", [$id]);
         flash('success','Rule removed'); header('Location: /rules'); exit;
     }

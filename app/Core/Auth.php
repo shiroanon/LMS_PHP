@@ -47,7 +47,15 @@ class Auth {
 
     public static function attempt(string $username, string $password): ?array {
         $pdo = Database::pdo();
-        $u = Database::one("SELECT * FROM users WHERE username=? LIMIT 1", [$username]);
+        // Students sign in with their library ID (never enrollment).
+        // Librarians / staff keep username login.
+        $u = null;
+        $byLib = Database::one("SELECT user_id FROM students WHERE library_id=? LIMIT 1", [$username]);
+        if ($byLib) $u = Database::one("SELECT * FROM users WHERE id=? LIMIT 1", [$byLib['user_id']]);
+        if (!$u) {
+            $u = Database::one("SELECT * FROM users WHERE username=? LIMIT 1", [$username]);
+            if ($u && $u['role'] === 'student') return null;
+        }
         if (!$u) return null;
         if (!password_verify($password, $u['password_hash'])) return null;
         // fetch profile

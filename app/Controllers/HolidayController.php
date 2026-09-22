@@ -3,6 +3,7 @@ namespace App\Controllers;
 
 use App\Core\Auth;
 use App\Core\Database;
+use App\Core\Sync;
 use App\Core\View;
 
 class HolidayController {
@@ -20,6 +21,7 @@ class HolidayController {
     }
     public function delete(string $id): void {
         Auth::requireRole('librarian');
+        Sync::tombstone('holidays', $id);
         Database::exec("DELETE FROM holidays WHERE id=?", [$id]);
         flash('success','Holiday removed'); header('Location: /holidays'); exit;
     }

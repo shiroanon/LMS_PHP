@@ -3,6 +3,7 @@ namespace App\Controllers;
 
 use App\Core\Auth;
 use App\Core\Database;
+use App\Core\Sync;
 use App\Core\View;
 
 class StaffController {
@@ -71,6 +72,7 @@ class StaffController {
         if(!$s){ flash('error','Staff not found'); header('Location: /staff'); exit; }
         $active = (int)(Database::one("SELECT COUNT(*) as c FROM issues WHERE staff_id=? AND status IN ('issued','overdue')", [$id])['c'] ?? 0);
         if($active > 0){ flash('error', $s['name']." has $active book(s) out — return them before removing the record"); header('Location: /staff/'.$id); exit; }
+        Sync::tombstone('staff_members', $id);
         Database::exec("DELETE FROM staff_members WHERE id=?", [$id]);
         flash('success','Staff deleted');
         header('Location: /staff'); exit;

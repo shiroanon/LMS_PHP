@@ -28,6 +28,11 @@ class Database {
                 PDO::ATTR_EMULATE_PREPARES => false,
             ]);
             self::$pdo->exec("SET NAMES {$cfg['charset']} COLLATE {$cfg['collation']}");
+            // Multi-node ID parity (MySQL + MariaDB portable): library mints odd ids,
+            // college mints even ids, so merged rows never collide. Driven by NODE_ID.
+            Sync::loadEnv();
+            $off = (($_ENV['NODE_ID'] ?? 'library') === 'college') ? 2 : 1;
+            self::$pdo->exec("SET SESSION auto_increment_increment=2, auto_increment_offset=$off");
         } catch (PDOException $e) {
             http_response_code(500);
             die("Database connection failed: " . htmlspecialchars($e->getMessage()));
