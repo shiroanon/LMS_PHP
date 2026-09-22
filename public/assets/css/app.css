@@ -1,0 +1,217 @@
+@import url('https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,700;9..144,800;9..144,900&family=IBM+Plex+Sans:wght@400;500;600&family=JetBrains+Mono:wght@500;700&display=swap');
+@import './tokens.css';
+
+/* Layout */
+.shell{display:flex; min-height:100vh}
+.sidebar{
+  width:var(--sidebar-w); background:var(--paper-3);
+  border-right:1px solid var(--border); position:fixed; inset:0 auto 0 0;
+  display:flex; flex-direction:column; z-index:40;
+}
+.main{margin-left:var(--sidebar-w); flex:1; min-width:0; background:var(--paper); min-height:100vh}
+.topbar{
+  height:var(--topbar-h); background:rgba(253,248,240,.85); backdrop-filter:blur(10px);
+  border-bottom:1px solid var(--border); position:sticky; top:0; z-index:30;
+  display:flex; align-items:center; gap:16px; padding:0 28px;
+}
+.page{padding:28px; max-width:1400px; margin:0 auto}
+@media(max-width:900px){
+  .sidebar{transform:translateX(-100%); transition:transform .25s ease}
+  .sidebar.open{transform:translateX(0)}
+  .main{margin-left:0}
+}
+
+/* Brand */
+.brand{padding:22px 20px; border-bottom:1px solid var(--border); display:flex; gap:12px; align-items:center}
+.brand-mark{
+  width:42px; height:42px; border-radius:11px; background:var(--maroon); color:white;
+  display:grid; place-items:center; font-family:"Fraunces"; font-weight:900; font-size:20px; letter-spacing:-.04em;
+  box-shadow:var(--shadow-stamp);
+}
+.brand-name{font-family:"Fraunces"; font-weight:900; font-size:17px; line-height:1; color:var(--ink)}
+.brand-sub{font-size:11px; letter-spacing:.14em; text-transform:uppercase; color:var(--slate); font-weight:600}
+/* drawer brass rod */
+.rail-rod{height:6px; background:linear-gradient(180deg, var(--brass-soft), var(--brass)); border-block:1px solid var(--border-strong);}
+
+/* Nav */
+.nav{padding:14px 12px; flex:1; overflow:auto}
+.nav-section{margin:14px 0 10px}
+.nav-title{font-size:10px; letter-spacing:.18em; text-transform:uppercase; color:var(--slate-2); font-weight:700; padding:6px 12px}
+.nav-link{
+  display:flex; align-items:center; gap:11px; padding:10px 12px; border-radius:12px;
+  color:var(--ink-soft); font-size:13.5px; font-weight:500; transition:all .15s;
+}
+.nav-link svg{width:16px; height:16px; stroke-width:1.8; flex:none; opacity:.9}
+.nav-link:hover{background:var(--paper-2); color:var(--ink)}
+.nav-link.active{background:var(--maroon); color:white; box-shadow:var(--shadow-stamp)}
+.nav-link.active svg{opacity:1}
+
+/* Footer */
+.sidebar-foot{padding:14px 12px; border-top:1px solid var(--border); display:flex; gap:10px; align-items:center; background:var(--paper-3)}
+.avatar{width:36px; height:36px; border-radius:999px; background:var(--paper-2); border:1px solid var(--border); display:grid; place-items:center; font-size:14px}
+.meta{flex:1; min-width:0}
+.meta strong{font-size:13px; display:block; white-space:nowrap; overflow:hidden; text-overflow:ellipsis}
+.meta span{font-size:11px; color:var(--slate)}
+.btn-logout{width:34px; height:34px; border-radius:10px; border:1px solid var(--border); background:transparent; cursor:pointer; display:grid; place-items:center}
+.btn-logout:hover{background:var(--vermillion-bg); border-color:var(--maroon-border); color:var(--maroon)}
+
+/* Hero / Page header */
+.page-head{margin-bottom:22px}
+.eyebrow{font-size:11px; letter-spacing:.16em; text-transform:uppercase; color:var(--slate); font-weight:700; display:flex; gap:8px; align-items:center}
+.eyebrow i{width:22px; height:1px; background:var(--brass); display:inline-block}
+.page-head h1{font-family:"Fraunces"; font-weight:900; font-size:34px; letter-spacing:-.03em; margin:6px 0 4px; line-height:1}
+.page-head h1 em{font-style:normal; color:var(--maroon)}
+.page-head p{color:var(--slate); font-size:14px; margin:0}
+
+/* Signature: catalog card */
+.catalog-card{
+  background:var(--paper-3); border:1px solid var(--border); border-radius:var(--radius-card);
+  box-shadow:var(--shadow-card); position:relative; overflow:hidden;
+}
+.catalog-card::before{
+  content:""; position:absolute; left:0; right:0; top:0; height:10px;
+  background:repeating-linear-gradient(90deg, transparent 0 8px, rgba(15,29,46,.10) 8px 9px, transparent 9px 16px) center top / 16px 10px repeat-x;
+  border-bottom:1px dashed var(--border-strong); background-color:var(--paper-2);
+}
+.catalog-card .card-inner{padding:22px; padding-top:32px}
+.book-foot{ justify-content:center; gap:12px }
+.perf-notch{
+  position:absolute; top:10px; left:50%; transform:translateX(-50%);
+  width:44px; height:10px; background:var(--paper); border:1px solid var(--border); border-top:none;
+  border-radius:0 0 12px 12px; box-shadow:inset 0 1px 0 rgba(0,0,0,.04);
+}
+.brass-hole{
+  width:10px; height:10px; border-radius:50%; background:var(--brass); border:2px solid var(--brass-soft);
+  box-shadow:inset 0 1px 2px rgba(0,0,0,.2);
+}
+/* Accession stamp */
+.stamp{
+  font-family:"JetBrains Mono"; font-size:11px; font-weight:700; letter-spacing:.08em; text-transform:uppercase;
+  border:1.6px solid var(--maroon); color:var(--maroon); padding:5px 8px; border-radius:7px;
+  background:var(--maroon-light); transform:rotate(-.6deg); display:inline-flex; gap:6px; align-items:center;
+}
+.stamp i{width:6px; height:6px; border-radius:50%; background:var(--maroon); display:inline-block}
+
+/* Due-slip stat */
+.slip{
+  background:var(--paper-3); border:1px solid var(--border); border-radius:18px; padding:16px 16px 14px;
+  box-shadow:var(--shadow-card); position:relative; overflow:hidden;
+}
+.slip::after{
+  content:""; position:absolute; bottom:0; left:0; right:0; height:6px;
+  background:linear-gradient(90deg, var(--maroon), var(--brass));
+  opacity:.0; transition:opacity .2s;
+}
+.slip:hover::after{opacity:1}
+.slip-top{display:flex; justify-content:space-between; align-items:center; margin-bottom:10px}
+.slip-label{font-size:11px; letter-spacing:.14em; text-transform:uppercase; color:var(--slate); font-weight:700}
+.slip-icon{width:36px; height:36px; border-radius:12px; display:grid; place-items:center; background:var(--paper-2); border:1px solid var(--border)}
+.slip-value{font-family:"Fraunces"; font-weight:900; font-size:28px; line-height:1; letter-spacing:-.03em}
+.slip-sub{font-size:12px; color:var(--slate); margin-top:4px}
+
+/* Grid */
+.grid-stats{display:grid; grid-template-columns:repeat(4,1fr); gap:16px; margin-bottom:20px}
+@media(max-width:1100px){.grid-stats{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:600px){.grid-stats{grid-template-columns:1fr}}
+
+.grid-2{display:grid; grid-template-columns:1.3fr .7fr; gap:16px}
+@media(max-width:980px){.grid-2{grid-template-columns:1fr}}
+
+/* Buttons */
+.btn{
+  display:inline-flex; align-items:center; gap:8px; padding:10px 14px; border-radius:12px;
+  border:1px solid transparent; font-weight:600; font-size:13px; cursor:pointer; transition:all .15s;
+}
+.btn-primary{background:var(--maroon); color:white; box-shadow:var(--shadow-stamp)}
+.btn-primary:hover{background:#7a2533}
+.btn-ghost{background:var(--paper-3); border-color:var(--border); color:var(--ink-soft)}
+.btn-ghost:hover{background:var(--paper-2)}
+.btn-danger{background:var(--vermillion); color:white}
+.btn-small{padding:7px 10px; font-size:12px; border-radius:10px}
+.pill{
+  display:inline-flex; align-items:center; gap:6px; padding:5px 9px; border-radius:999px; font-size:11px; font-weight:700; letter-spacing:.04em; border:1px solid var(--border);
+}
+.pill-dot{width:6px; height:6px; border-radius:50%}
+.pill-green{background:var(--success-bg); color:var(--success); border-color:#CFF0E3}
+.pill-green .pill-dot{background:var(--success)}
+.pill-amber{background:var(--warning-bg); color:var(--warning); border-color:#FBE8B5}
+.pill-amber .pill-dot{background:var(--warning)}
+.pill-red{background:var(--vermillion-bg); color:var(--maroon); border-color:var(--maroon-border)}
+.pill-red .pill-dot{background:var(--vermillion)}
+.pill-slate{background:var(--paper-2); color:var(--slate)}
+.pill-slate .pill-dot{background:var(--slate)}
+
+/* Table */
+.table-wrap{overflow:auto; border-radius:16px; border:1px solid var(--border); background:var(--paper-3)}
+.data-table{width:100%; border-collapse:separate; border-spacing:0; font-size:13px}
+.data-table th{
+  text-align:left; padding:12px 14px; font-size:11px; letter-spacing:.12em; text-transform:uppercase;
+  color:var(--slate); background:var(--paper-2); border-bottom:1px solid var(--border); white-space:nowrap;
+}
+.data-table td{padding:13px 14px; border-bottom:1px solid var(--border); color:var(--ink-soft); vertical-align:middle}
+.data-table tr:last-child td{border-bottom:none}
+.data-table tr:hover td{background:#FDF6E8}
+
+/* Form */
+.field{display:flex; flex-direction:column; gap:6px}
+.field label{font-size:11px; letter-spacing:.12em; text-transform:uppercase; color:var(--slate); font-weight:700}
+.input, .select, .textarea{
+  width:100%; padding:11px 12px; border:1px solid var(--border); border-radius:12px; background:white;
+  font-size:13.5px; outline:none; transition:all .15s;
+}
+.input:focus, .select:focus, .textarea:focus{border-color:var(--maroon-border); box-shadow:0 0 0 4px var(--maroon-light)}
+.textarea{min-height:90px; resize:vertical}
+.form-row{display:grid; grid-template-columns:1fr 1fr; gap:12px}
+@media(max-width:700px){.form-row{grid-template-columns:1fr}}
+
+/* Catalog book card signature */
+.book-card{
+  background:var(--paper-3); border:1px solid var(--border); border-radius:18px; overflow:hidden; box-shadow:var(--shadow-card);
+  display:flex; flex-direction:column; transition:transform .15s, box-shadow .15s;
+}
+.book-card:hover{transform:translateY(-2px); box-shadow:0 14px 30px rgba(15,29,46,.10)}
+.book-perf{height:10px; background:var(--paper-2); border-bottom:1px dashed var(--border-strong); position:relative}
+.book-perf::after{content:""; position:absolute; left:50%; top:100%; transform:translate(-50%,-6px); width:42px; height:12px; background:var(--paper); border:1px solid var(--border); border-top:none; border-radius:0 0 12px 12px}
+.book-body{padding:16px}
+.book-title{font-family:"Fraunces"; font-weight:800; font-size:15px; line-height:1.25; margin:0 0 4px}
+.book-author{font-size:12px; color:var(--slate); margin-bottom:10px}
+.book-meta{display:flex; flex-wrap:wrap; gap:8px; font-size:11px; color:var(--slate)}
+.book-foot{margin-top:12px; padding-top:12px; border-top:1px solid var(--border); display:flex; justify-content:space-between; align-items:center}
+.avail{font-family:"JetBrains Mono"; font-size:11px; font-weight:700; letter-spacing:.06em}
+.avail b{color:var(--success)}
+.avail i{font-style:normal; color:var(--slate)}
+
+/* Search */
+.search{position:relative; flex:1; max-width:420px}
+.search input{width:100%; padding:11px 12px 11px 38px; border:1px solid var(--border); border-radius:12px; background:white; font-size:13px}
+.search svg{position:absolute; left:12px; top:50%; transform:translateY(-50%); width:16px; height:16px; color:var(--slate)}
+
+/* Tabs — mirrors original .tabs/.tab */
+.tabs{ display:flex; gap:4px; border-bottom:1px solid var(--border); margin-bottom:18px }
+.tab{ padding:10px 16px; border:none; background:none; color:var(--slate); font-weight:600; font-size:13px; cursor:pointer; border-bottom:2px solid transparent; margin-bottom:-1px }
+.tab:hover{ color:var(--ink) }
+.tab.active{ color:var(--maroon); border-bottom-color:var(--maroon) }
+
+/* Modal — for issue picker, return verify, etc */
+.modal-overlay{ position:fixed; inset:0; background:rgba(15,29,46,.45); backdrop-filter:blur(4px); display:flex; align-items:center; justify-content:center; z-index:1000; padding:20px }
+.modal{ background:var(--paper-3); border:1px solid var(--border); border-radius:20px; width:100%; max-width:520px; max-height:85vh; overflow:auto; box-shadow:0 20px 60px rgba(15,29,46,.25) }
+.modal-header{ display:flex; align-items:center; justify-content:space-between; gap:12px; padding:16px 20px; border-bottom:1px solid var(--border) }
+.modal-header h2{ font-family:"Fraunces"; font-weight:800; font-size:16px; margin:0; flex:1 }
+.modal-header .btn-icon{ flex-shrink:0 }
+.modal-body{ padding:18px 20px }
+.modal-footer{ display:flex; justify-content:flex-end; gap:8px; padding:14px 20px; border-top:1px solid var(--border) }
+.btn-icon{ width:32px; height:32px; padding:0; border-radius:8px; display:grid; place-items:center; line-height:1; font-size:16px; text-align:center; font-family:system-ui, sans-serif; letter-spacing:0 }
+
+/* Empty */
+.empty{padding:40px; text-align:center; color:var(--slate)}
+.empty h3{font-family:"Fraunces"; font-size:18px; color:var(--ink); margin:8px 0 4px}
+
+/* Collapsible catalog-detail block (book cards + detail page when a cover leads) */
+.bib-collapse{margin-top:10px}
+.bib-collapse summary{list-style:none; display:flex; justify-content:space-between; align-items:center; gap:10px; cursor:pointer; padding:9px 12px; background:var(--paper-2); border:1px solid var(--border); border-radius:10px; font-size:11px; letter-spacing:.12em; text-transform:uppercase; color:var(--slate); font-weight:700}
+.bib-collapse summary::-webkit-details-marker{display:none}
+.bib-collapse summary::after{content:"+"; font-size:14px; color:var(--maroon); font-weight:800}
+.bib-collapse[open] summary::after{content:"–"}
+.bib-collapse summary:hover{border-color:var(--maroon-border)}
+.bib-collapse summary:focus-visible{outline:2px solid var(--maroon); outline-offset:2px}
+.bib-collapse summary .mono{font-size:11px; letter-spacing:.04em; text-transform:none; font-weight:500; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; max-width:55%}

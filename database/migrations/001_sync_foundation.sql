@@ -1,0 +1,64 @@
+-- 001_sync_foundation.sql — multi-node sync foundations (MySQL + MariaDB portable)
+-- Run once per node:  mariadb -u lms -plms_dev_2026 lms < database/migrations/001_sync_foundation.sql
+-- Fresh installs: database/schema.sql already contains the same end state.
+
+-- Per-table high-water marks, one row per (node, table), maintained by the sync daemon.
+CREATE TABLE IF NOT EXISTS sync_state (
+  node VARCHAR(32) NOT NULL,
+  tbl VARCHAR(64) NOT NULL,
+  watermark DATETIME NULL,
+  updated_at DATETIME NULL DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (node, tbl)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- Delete tracking: hard deletes cascade silently, so the daemon logs them here BEFORE deleting.
+CREATE TABLE IF NOT EXISTS sync_tombstones (
+  id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+  tbl VARCHAR(64) NOT NULL,
+  row_id VARCHAR(64) NOT NULL,
+  node_id VARCHAR(32) NULL,
+  deleted_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  INDEX idx_tomb_table (tbl)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- Merge conflicts awaiting librarian review (never silently overwritten).
+CREATE TABLE IF NOT EXISTS sync_conflicts (
+  id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+  tbl VARCHAR(64) NOT NULL,
+  row_pk VARCHAR(64) NOT NULL,
+  local_json MEDIUMTEXT NULL,
+  remote_json MEDIUMTEXT NULL,
+  winner ENUM('local','remote') NOT NULL,
+  reason VARCHAR(191) NOT NULL DEFAULT '',
+  status ENUM('open','resolved') NOT NULL DEFAULT 'open',
+  created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  INDEX idx_conflict_status (status)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- Replay protection for HMAC-signed sync requests (purged to 15 min window on use).
+CREATE TABLE IF NOT EXISTS sync_nonce (
+  nonce VARCHAR(64) NOT NULL PRIMARY KEY,
+  created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- Origin + freshness stamps. updated_at is engine-maintained (both engines);
+-- node_id is stamped by per-node triggers (see docs/sync-triggers-library.sql).
+ALTER TABLE users ADD COLUMN updated_at DATETIME NULL DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP, ADD COLUMN node_id VARCHAR(32) NULL;
+ALTER TABLE students ADD COLUMN updated_at DATETIME NULL DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP, ADD COLUMN node_id VARCHAR(32) NULL;
+ALTER TABLE staff_members ADD COLUMN created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP, ADD COLUMN updated_at DATETIME NULL DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP, ADD COLUMN node_id VARCHAR(32) NULL;
+ALTER TABLE suppliers ADD COLUMN updated_at DATETIME NULL DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP, ADD COLUMN node_id VARCHAR(32) NULL;
+ALTER TABLE books ADD COLUMN updated_at DATETIME NULL DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP, ADD COLUMN node_id VARCHAR(32) NULL;
+ALTER TABLE book_copies ADD COLUMN updated_at DATETIME NULL DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP, ADD COLUMN node_id VARCHAR(32) NULL;
+ALTER TABLE book_categories ADD COLUMN updated_at DATETIME NULL DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP, ADD COLUMN node_id VARCHAR(32) NULL;
+ALTER TABLE issues ADD COLUMN updated_at DATETIME NULL DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP, ADD COLUMN node_id VARCHAR(32) NULL;
+ALTER TABLE fines ADD COLUMN updated_at DATETIME NULL DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP, ADD COLUMN node_id VARCHAR(32) NULL;
+ALTER TABLE library_visits ADD COLUMN updated_at DATETIME NULL DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP, ADD COLUMN node_id VARCHAR(32) NULL;
+ALTER TABLE book_reservations ADD COLUMN updated_at DATETIME NULL DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP, ADD COLUMN node_id VARCHAR(32) NULL;
+ALTER TABLE holidays ADD COLUMN updated_at DATETIME NULL DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP, ADD COLUMN node_id VARCHAR(32) NULL;
+ALTER TABLE digital_resources ADD COLUMN updated_at DATETIME NULL DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP, ADD COLUMN node_id VARCHAR(32) NULL;
+ALTER TABLE suggestions ADD COLUMN updated_at DATETIME NULL DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP, ADD COLUMN node_id VARCHAR(32) NULL;
+ALTER TABLE feedback ADD COLUMN updated_at DATETIME NULL DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP, ADD COLUMN node_id VARCHAR(32) NULL;
+ALTER TABLE book_images ADD COLUMN updated_at DATETIME NULL DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP, ADD COLUMN node_id VARCHAR(32) NULL;
+ALTER TABLE library_rules ADD COLUMN updated_at DATETIME NULL DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP, ADD COLUMN node_id VARCHAR(32) NULL;
+ALTER TABLE announcements ADD COLUMN node_id VARCHAR(32) NULL;
+ALTER TABLE system_settings ADD COLUMN updated_at DATETIME NULL DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP, ADD COLUMN node_id VARCHAR(32) NULL;

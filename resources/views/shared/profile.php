@@ -1,0 +1,2 @@
+<?php $title='Profile'; ?>
+<div class="catalog-card" style="max-width:560px; margin:40px auto"><div class="card-inner"><div class="stamp">Librarian</div><h1 class="display" style="margin:10px 0 6px"><?= e($profile['display_name'] ?? $profile['username']) ?></h1><p style="color:var(--slate)">Role: <?= e($profile['role']) ?> · Username: <span class="mono"><?= e($profile['username']) ?></span></p></div></div>

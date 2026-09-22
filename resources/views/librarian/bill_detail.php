@@ -1,0 +1,6 @@
+<?php $title='Bill '.$bill['bill_no']; ?>
+<div class="page-head"><a href="/bills" class="btn btn-ghost btn-small">← Bills</a><div class="eyebrow" style="margin-top:10px">Bill <i></i> <span class="mono"><?= e($bill['bill_no']) ?></span></div><h1><?= e($bill['supplier_name']) ?> <em style="color:var(--slate); font-weight:600">· ₹<?= number_format($bill['total_amount']) ?></em></h1><p><?= e($bill['shop_name']) ?> · <?= e($bill['mobile']) ?> · <?= e($bill['purchase_date']) ?> · <?= e($bill['payment_mode']) ?></p></div>
+<div class="table-wrap"><table class="data-table"><thead><tr><th>#</th><th>Book</th><th>Qty</th><th>Unit ₹</th></tr></thead><tbody>
+<?php foreach($items as $i=>$it): ?><tr><td class="mono"><?= $i+1 ?></td><td><?= e($it['title'] ?: '—') ?></td><td class="mono"><?= (int)$it['qty'] ?></td><td class="mono">₹<?= number_format($it['unit_price'],2) ?></td></tr><?php endforeach; if(empty($items)): ?><tr><td colspan="4" style="text-align:center; color:var(--slate)">No line items.</td></tr><?php endif; ?>
+</tbody></table></div>
+<form method="post" action="/bills/<?= (int)$bill['id'] ?>/delete" onsubmit="return confirm('Delete bill?')" style="margin-top:12px"><button class="btn btn-ghost btn-small" style="color:var(--vermillion)">Delete bill</button></form>

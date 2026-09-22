@@ -1,0 +1,45 @@
+:root{
+  /* Subject: engineering library archive — paper, ink, brass */
+  --paper:#FDF8F0;
+  --paper-2:#F2EDE3;
+  --paper-3:#FFFDF8;
+  --ink:#0F1D2E;
+  --ink-soft:#243044;
+  --maroon:#8B2D3B;
+  --maroon-soft:#A14B59;
+  --maroon-light:#F3E6E8;
+  --maroon-border:#E2C8CC;
+  --brass:#C1A45A;
+  --brass-soft:#E8D9B0;
+  --brass-muted:#F5ECD6;
+  --vermillion:#E84855;
+  --vermillion-bg:#FDECEF;
+  --slate:#677387;
+  --slate-2:#94A3B8;
+  --success:#10805A;
+  --success-bg:#E6F4EE;
+  --warning:#B58500;
+  --warning-bg:#FFF4D6;
+  --border:#E6DDD0;
+  --border-strong:#D9CCB5;
+  --radius-card:18px;
+  --radius-pill:999px;
+  --sidebar-w:280px;
+  --topbar-h:64px;
+  --shadow-card:0 10px 30px rgba(15,29,46,.08), 0 1px 0 rgba(15,29,46,.06);
+  --shadow-stamp:0 2px 8px rgba(139,45,59,.18);
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{
+  margin:0;
+  font-family:"IBM Plex Sans", Inter, system-ui, -apple-system, sans-serif;
+  background:var(--paper);
+  color:var(--ink);
+  -webkit-font-smoothing:antialiased;
+  line-height:1.55;
+}
+a{color:var(--maroon); text-decoration:none}
+a:hover{color:var(--ink)}
+.mono{font-family:"JetBrains Mono", ui-monospace, monospace}
+.display{font-family:"Fraunces", Georgia, serif; letter-spacing:-.02em}

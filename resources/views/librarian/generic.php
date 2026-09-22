@@ -1,0 +1,3 @@
+<?php $title = $title ?? 'Page'; ?>
+<div class="page-head"><div class="eyebrow">Module <i></i> <span class="mono">Coming soon</span></div><h1><?= e($title) ?></h1><p>This ledger section is stubbed — data tables wired, UI follows the same card-catalog signature.</p></div>
+<div class="catalog-card"><div class="perf-notch"></div><div class="card-inner empty"><div class="stamp">Ink + Brass</div><h3>Under construction</h3><p>Schema exists in <span class="mono">database/schema.sql</span>. Wire controller + view when needed. Same perforated card, same stamp.</p><a href="/dashboard" class="btn btn-ghost btn-small" style="margin-top:12px">Back to desk →</a></div></div>
