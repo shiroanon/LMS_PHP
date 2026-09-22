@@ -36,11 +36,10 @@
       <h2 class="display" style="font-size:26px; margin:0 0 6px">Welcome back</h2>
       <p style="color:var(--slate); font-size:13px; margin:0 0 18px">Librarian or student — same desk, same cards.</p>
       <?php if(!empty($error)): ?><div style="background:var(--vermillion-bg); border:1px solid var(--maroon-border); color:var(--maroon); padding:10px 12px; border-radius:12px; font-size:13px; margin-bottom:12px"><?= e($error) ?></div><?php endif; ?>
-      <div class="field"><label>Username — enrollment / library ID</label><input class="input mono" type="text" name="username" required placeholder="e.g. 0901CS221043 or admin" value="<?= e($_POST['username'] ?? '') ?>"></div>
+      <div class="field"><label>Library ID — students / username — librarians</label><input class="input mono" type="text" name="username" required placeholder="e.g. A20028082 or admin" value="<?= e($_POST['username'] ?? '') ?>"></div>
       <div class="field"><label>Password</label><input class="input" type="password" name="password" required placeholder="••••••••"></div>
-      <div style="font-size:11px; color:var(--slate); background:var(--paper-2); border:1px solid var(--border); padding:10px 12px; border-radius:12px">Student hint: use your <b>enrollment</b> as both username and initial password. You’ll be asked to change it.</div>
+      <div style="font-size:11px; color:var(--slate); background:var(--paper-2); border:1px solid var(--border); padding:10px 12px; border-radius:12px">Student hint: sign in with your <b>library ID</b> (not enrollment). First-timers use the enrollment as the initial password. You’ll be asked to change it.</div>
       <button class="btn btn-primary" style="width:100%; justify-content:center; margin-top:10px; padding:12px">Sign in — open the ledger</button>
-      <div style="text-align:center; margin-top:12px; font-size:12px; color:var(--slate)">Librarian demo: <span class="mono" style="color:var(--ink)">admin / admin123</span></div>
     </form>
     <div style="text-align:center; font-size:11px; color:var(--slate)">© RJIT · LMS · 2026</div>
   </div>

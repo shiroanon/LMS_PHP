@@ -28,7 +28,6 @@ $thLink = 'color:inherit; text-decoration:none';
       <button class="btn btn-ghost btn-small">Filter</button>
     </form>
     <div style="display:flex; gap:8px; align-items:center; margin-left:auto">
-      <a href="/students/import" class="btn btn-ghost btn-small">Import CSV</a>
       <a href="/students/new" class="btn btn-primary btn-small">+ New student</a>
     </div>
   </div>

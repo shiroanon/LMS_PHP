@@ -325,3 +325,171 @@ ALTER TABLE book_images ADD COLUMN updated_at DATETIME NULL DEFAULT NULL ON UPDA
 ALTER TABLE library_rules ADD COLUMN updated_at DATETIME NULL DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP, ADD COLUMN node_id VARCHAR(32) NULL;
 ALTER TABLE announcements ADD COLUMN node_id VARCHAR(32) NULL;
 ALTER TABLE system_settings ADD COLUMN updated_at DATETIME NULL DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP, ADD COLUMN node_id VARCHAR(32) NULL;
+CREATE TABLE `audit_log` (
+  `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
+  `user_id` bigint(20) unsigned DEFAULT NULL,
+  `action` text NOT NULL,
+  `details` text DEFAULT NULL,
+  `created_at` datetime DEFAULT current_timestamp(),
+  PRIMARY KEY (`id`),
+  KEY `user_id` (`user_id`),
+  CONSTRAINT `fk_drift_1` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE SET NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci
+;
+CREATE TABLE `book_notes` (
+  `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
+  `book_id` bigint(20) unsigned NOT NULL,
+  `notes` text DEFAULT NULL,
+  `created_at` datetime DEFAULT current_timestamp(),
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `book_id` (`book_id`),
+  CONSTRAINT `fk_drift_2` FOREIGN KEY (`book_id`) REFERENCES `books` (`id`) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci
+;
+CREATE TABLE `purchase_bills` (
+  `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
+  `bill_no` varchar(100) NOT NULL,
+  `supplier_id` bigint(20) unsigned NOT NULL,
+  `purchase_date` date NOT NULL,
+  `total_amount` decimal(10,2) NOT NULL,
+  `discount` decimal(10,2) DEFAULT 0.00,
+  `tax` decimal(10,2) DEFAULT 0.00,
+  `payment_mode` enum('cash','cheque','online','credit') DEFAULT 'cash',
+  `created_at` datetime DEFAULT current_timestamp(),
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `bill_no` (`bill_no`),
+  KEY `supplier_id` (`supplier_id`),
+  CONSTRAINT `fk_drift_3` FOREIGN KEY (`supplier_id`) REFERENCES `suppliers` (`id`) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci
+;
+CREATE TABLE `purchase_bill_items` (
+  `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
+  `bill_id` bigint(20) unsigned NOT NULL,
+  `book_id` bigint(20) unsigned DEFAULT NULL,
+  `qty` int(11) NOT NULL,
+  `unit_price` decimal(10,2) NOT NULL,
+  `created_at` datetime DEFAULT current_timestamp(),
+  PRIMARY KEY (`id`),
+  KEY `bill_id` (`bill_id`),
+  KEY `book_id` (`book_id`),
+  CONSTRAINT `fk_drift_4` FOREIGN KEY (`bill_id`) REFERENCES `purchase_bills` (`id`) ON DELETE CASCADE,
+  CONSTRAINT `fk_drift_5` FOREIGN KEY (`book_id`) REFERENCES `books` (`id`) ON DELETE SET NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci
+;
+CREATE TABLE `reminder_log` (
+  `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
+  `student_id` bigint(20) unsigned NOT NULL,
+  `message` text NOT NULL,
+  `sent_via` varchar(50) DEFAULT 'email',
+  `created_at` datetime DEFAULT current_timestamp(),
+  `section` varchar(50) DEFAULT 'general',
+  `notification_count` int(11) DEFAULT 1,
+  `book_id` bigint(20) unsigned DEFAULT NULL,
+  `is_read` tinyint(1) DEFAULT 0,
+  PRIMARY KEY (`id`),
+  KEY `student_id` (`student_id`),
+  CONSTRAINT `fk_drift_6` FOREIGN KEY (`student_id`) REFERENCES `students` (`id`) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci
+;
+CREATE TABLE `student_barcodes` (
+  `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
+  `student_id` bigint(20) unsigned NOT NULL,
+  `barcode_data` varchar(191) NOT NULL,
+  `created_at` datetime DEFAULT current_timestamp(),
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `student_id` (`student_id`),
+  UNIQUE KEY `barcode_data` (`barcode_data`),
+  CONSTRAINT `fk_drift_7` FOREIGN KEY (`student_id`) REFERENCES `students` (`id`) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci
+;
+CREATE TABLE `backup_log` (
+  `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
+  `filename` varchar(191) NOT NULL,
+  `size` bigint(20) DEFAULT NULL,
+  `status` varchar(50) DEFAULT 'success',
+  `created_at` datetime DEFAULT current_timestamp(),
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `filename` (`filename`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci
+;
+CREATE TABLE `fine_notifications` (
+  `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
+  `fine_id` bigint(20) unsigned DEFAULT NULL,
+  `student_id` bigint(20) unsigned NOT NULL,
+  `message` text NOT NULL,
+  `sent_via` varchar(50) DEFAULT 'email',
+  `created_at` datetime DEFAULT current_timestamp(),
+  PRIMARY KEY (`id`),
+  KEY `fine_id` (`fine_id`),
+  KEY `student_id` (`student_id`),
+  CONSTRAINT `fk_drift_8` FOREIGN KEY (`fine_id`) REFERENCES `fines` (`id`) ON DELETE SET NULL,
+  CONSTRAINT `fk_drift_9` FOREIGN KEY (`student_id`) REFERENCES `students` (`id`) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci
+;
+CREATE TABLE `disposed_books` (
+  `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
+  `accession_no` varchar(50) DEFAULT NULL,
+  `title` varchar(500) DEFAULT NULL,
+  `isbn` varchar(50) DEFAULT NULL,
+  `publisher` varchar(191) DEFAULT NULL,
+  `price` varchar(50) DEFAULT NULL,
+  `accession_date` varchar(50) DEFAULT NULL,
+  `disposal_date` varchar(50) DEFAULT NULL,
+  `status` varchar(50) DEFAULT 'Disposed',
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci
+;
+CREATE TABLE `student_photos` (
+  `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
+  `student_id` bigint(20) unsigned NOT NULL,
+  `photo_url` varchar(500) DEFAULT NULL,
+  `thumb_impression_url` varchar(500) DEFAULT NULL,
+  `created_at` datetime DEFAULT current_timestamp(),
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `student_id` (`student_id`),
+  CONSTRAINT `fk_drift_10` FOREIGN KEY (`student_id`) REFERENCES `students` (`id`) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci
+;
+CREATE TABLE `notification_counter` (
+  `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
+  `student_id` bigint(20) unsigned NOT NULL,
+  `section` enum('overdue','fine','reservation','general') NOT NULL,
+  `notification_count` int(11) DEFAULT 1,
+  `last_notified` datetime DEFAULT current_timestamp(),
+  `created_at` datetime DEFAULT current_timestamp(),
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `student_id` (`student_id`,`section`),
+  CONSTRAINT `fk_drift_11` FOREIGN KEY (`student_id`) REFERENCES `students` (`id`) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci
+;
+CREATE TABLE `book_barcodes` (
+  `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
+  `book_id` bigint(20) unsigned NOT NULL,
+  `barcode_data` varchar(191) NOT NULL,
+  `created_at` datetime DEFAULT current_timestamp(),
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `book_id` (`book_id`),
+  UNIQUE KEY `barcode_data` (`barcode_data`),
+  CONSTRAINT `fk_drift_12` FOREIGN KEY (`book_id`) REFERENCES `books` (`id`) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci
+;
+CREATE TABLE `google_form_imports` (
+  `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
+  `enrollment_no` varchar(50) NOT NULL,
+  `name` varchar(191) NOT NULL,
+  `email` varchar(191) DEFAULT NULL,
+  `contact` varchar(50) DEFAULT NULL,
+  `father_name` varchar(191) DEFAULT NULL,
+  `branch` varchar(100) NOT NULL,
+  `year` int(11) NOT NULL,
+  `address` text DEFAULT NULL,
+  `gender` varchar(20) DEFAULT NULL,
+  `dob` date DEFAULT NULL,
+  `blood_group` varchar(20) DEFAULT NULL,
+  `aadhar_no` varchar(50) DEFAULT NULL,
+  `status` enum('pending','approved','rejected') DEFAULT 'pending',
+  `created_at` datetime DEFAULT current_timestamp(),
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `enrollment_no` (`enrollment_no`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci
+;

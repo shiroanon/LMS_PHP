@@ -1,5 +1,6 @@
 <?php $title='Profile'; ?>
 <div class="page-head"><div class="eyebrow">Borrower <i></i> <span class="mono"><?= e($s['enrollment_no']) ?></span></div><h1><?= e($s['name']) ?></h1><p><?= e($s['branch']) ?> · Year <?= (int)$s['year'] ?> · <span class="pill <?= $s['status']==='active'?'pill-green':'pill-amber' ?>"><?= e($s['status']) ?></span></p></div>
+<?php if((int)($user['must_change_password'] ?? 0) === 1): ?><div style="background:var(--warning-bg); border:1px solid #FBE8B5; color:var(--warning); padding:12px 14px; border-radius:12px; font-size:13px; font-weight:600; margin-bottom:16px">First login — set a new password below to unlock your shelf.</div><?php endif; ?>
 <div class="grid-2">
   <div class="catalog-card"><div class="card-inner">
     <div class="eyebrow">Contact <i></i></div>

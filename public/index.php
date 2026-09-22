@@ -30,6 +30,7 @@ use App\Controllers\ProfileController;
 use App\Controllers\BarcodeController;
 use App\Controllers\UploadController;
 use App\Controllers\HealthController;
+use App\Controllers\SyncController;
 use App\Controllers\StaffController;
 use App\Controllers\SupplierController;
 use App\Controllers\HolidayController;
@@ -44,6 +45,12 @@ $router = new Router();
 
 // public
 $router->get('/healthz', [HealthController::class,'check']);
+// node-to-node sync (HMAC-guarded inside the controller, no session login)
+$router->get('/sync/pull', [SyncController::class,'pull']);
+$router->post('/sync/push', [SyncController::class,'push']);
+$router->get('/sync/files', [SyncController::class,'files']);
+$router->get('/sync/file', [SyncController::class,'file']);
+$router->post('/sync/file', [SyncController::class,'filePush']);
 $router->get('/login', [AuthController::class,'loginForm']);
 $router->post('/login', [AuthController::class,'login']);
 $router->post('/logout', [AuthController::class,'logout']);
@@ -132,6 +139,18 @@ $router->get('/reservations', function(){
     }
 });
 $router->post('/reservations/{id}/cancel', function(string $id){ \App\Core\Auth::requireLogin(); \App\Core\Database::exec("UPDATE book_reservations SET status='cancelled' WHERE id=?", [$id]); header('Location: /reservations'); exit; });
+$router->post('/reservations/create', function(){
+    \App\Core\Auth::requireRole('student');
+    $u = \App\Core\Auth::user();
+    $bookId = (int)($_POST['book_id'] ?? 0);
+    $book = $bookId ? \App\Core\Database::one("SELECT id, title FROM books WHERE id=?", [$bookId]) : null;
+    if(!$book){ flash('error','Book not found — check the book ID'); header('Location: /reservations'); exit; }
+    $dup = \App\Core\Database::one("SELECT id FROM book_reservations WHERE student_id=? AND book_id=? AND status IN ('pending','notified') LIMIT 1", [$u['profile']['id'],$bookId]);
+    if($dup){ flash('error','You already have an active hold on this title'); header('Location: /reservations'); exit; }
+    \App\Core\Database::exec("INSERT INTO book_reservations (student_id, book_id) VALUES (?,?)", [$u['profile']['id'],$bookId]);
+    flash('success',"Reserved {$book['title']} — you’ll be notified on return");
+    header('Location: /reservations'); exit;
+});
 $router->post('/reservations/{id}/fulfill', function(string $id){ \App\Core\Auth::requireRole('librarian'); \App\Core\Database::exec("UPDATE book_reservations SET status='fulfilled' WHERE id=?", [$id]); header('Location: /reservations'); exit; });
 $router->get('/suppliers', [SupplierController::class,'index']);
 $router->post('/suppliers', [SupplierController::class,'create']);
